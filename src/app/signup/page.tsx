@@ -5,24 +5,25 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const [user, setUser] = React.useState({
     email: "",
     password: "",
+    username: "",
   });
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const onLogin = async () => {
+  const onSignup = async () => {
     try {
       setLoading(true);
-      const response = await axios.post("/api/users/login", user);
-      console.log("Login success", response.data);
-      toast.success("Login success");
-      router.push("/profile");
+      const response = await axios.post("/api/users/signup", user);
+      console.log("Signup success", response.data);
+      router.push("/login");
     } catch (error: any) {
-      console.log("Login failed", error.message);
+      console.log("Signup failed", error.message);
+
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -30,7 +31,11 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (user.email.length > 0 && user.password.length > 0) {
+    if (
+      user.email.length > 0 &&
+      user.password.length > 0 &&
+      user.username.length > 0
+    ) {
       setButtonDisabled(false);
     } else {
       setButtonDisabled(true);
@@ -39,9 +44,17 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1>{loading ? "Processing" : "Login"}</h1>
+      <h1>{loading ? "Processing" : "Signup"}</h1>
       <hr />
-
+      <label htmlFor="username">username</label>
+      <input
+        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
+        id="username"
+        type="text"
+        value={user.username}
+        onChange={(e) => setUser({ ...user, username: e.target.value })}
+        placeholder="username"
+      />
       <label htmlFor="email">email</label>
       <input
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black"
@@ -61,12 +74,12 @@ export default function LoginPage() {
         placeholder="password"
       />
       <button
-        onClick={onLogin}
+        onClick={onSignup}
         className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
       >
-        Login here
+        {buttonDisabled ? "No signup" : "Signup"}
       </button>
-      <Link href="/signup">Visit Signup page</Link>
+      <Link href="/login">Visit login page</Link>
     </div>
   );
 }
